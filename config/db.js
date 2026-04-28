@@ -4,7 +4,7 @@ require('dotenv').config();
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
-  database: 'server-node-API',
+  database: 'server-API-next',
   password: 'root',
   port: 5432,
 });
