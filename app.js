@@ -1,17 +1,32 @@
-const express = require('express');
-const pool = require('./config/db');
+require('dotenv').config()
+const express = require('express')
+const cors = require('cors')
 
-const app = express();
+const sequelize = require('./config/db')
+const userRoutes = require('./routes/userRoutes')
 
-pool.query('SELECT NOW()', (err, res) => {
-  if(err) {
-    console.error('Error connecting to the database', err.stack);
-  } else {
-    console.log('Connected to the database:', res.rows);
+const app = express()
+
+app.use(express.json())
+
+app.use('/api', userRoutes)
+
+const PORT = 5000
+
+const startServer = async () => {
+  try {
+    await sequelize.authenticate()
+    console.log('Подключение к БД установлено успешно.')
+
+    await sequelize.sync({ alter: true})
+    console.log('Модели синхронизированы с БД.')
+
+    app.listen(PORT, () => {
+      console.log(`Сервер запущен на порту ${PORT}`)
+    }) 
+  } catch (error) {
+    console.error('Не удалось подключиться к БД:', error)
   }
-});
+}
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+startServer()
